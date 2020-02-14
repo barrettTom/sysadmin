@@ -3,6 +3,7 @@ set -e
 
 ROOT_PASS=root
 KRB5_PASS=krb5
+KRB5_ADMIN_PASS=pass
 
 scripts/debian_roll kerberos
 lxc-attach -n kerberos -v DEBIAN_FRONTEND=noninteractive -- apt-get -y install krb5-admin-server
@@ -12,8 +13,13 @@ IP="$(lxc-info -n kerberos | grep IP | tr -s ' ' | cut -d ' ' -f 2)"
 sshpass -p $ROOT_PASS ssh-copy-id -o "StrictHostKeyChecking=no" root@$IP
 scp configs/kerberos/krb5.conf root@$IP:/etc/
 scp configs/kerberos/kdc.conf root@$IP:/etc/krb5kdc/
+scp configs/kerberos/kadm5.acl root@$IP:/etc/krb5kdc/
 
 lxc-attach -n kerberos -- bash -c 'echo -e "'$KRB5_PASS'\n'$KRB5_PASS'" | krb5_newrealm'
 
 lxc-attach -n kerberos -- systemctl restart krb5-admin-server
 lxc-attach -n kerberos -- systemctl restart krb5-kdc
+
+lxc-attach -n kerberos -- bash -c 'echo -e "'$KRB5_ADMIN_PASS'\n'$KRB5_ADMIN_PASS'" | kadmin.local addprinc root/admin'
+
+# should be able to now use kadmin, but cannot ?
