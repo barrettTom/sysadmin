@@ -3,7 +3,8 @@ set -e
 
 NAME=$1
 USER=tom
-PASS=durr
+PASS=tom
+ROOT_PASS=root
 
 # init
 lxc-create -n $NAME -t download -- --dist debian --release buster --arch amd64
@@ -12,11 +13,13 @@ lxc-start  -n $NAME
 sleep 15
 
 # install basics
-lxc-attach -n $NAME -- apt update
-lxc-attach -n $NAME -- apt dist-upgrade
-lxc-attach -n $NAME -- apt install -y sudo openssh-server x11-xserver-utils
+lxc-attach -n $NAME -- apt-get update
+lxc-attach -n $NAME -- apt-get dist-upgrade
+lxc-attach -n $NAME -- apt-get install -y apt-utils
+lxc-attach -n $NAME -- apt-get install -y sudo openssh-server x11-xserver-utils
 
-# setup user
+# setup users
+lxc-attach -n $NAME -- bash -c 'echo -e "'$ROOT_PASS'\n'$ROOT_PASS'" | passwd'
 lxc-attach -n $NAME -- adduser $USER --gecos "" --disabled-password
 lxc-attach -n $NAME -- bash -c 'echo -e "'$PASS'\n'$PASS'" | passwd $USER'
 

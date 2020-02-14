@@ -1,6 +1,0 @@
-#!/bin/bash
-set -e
-
-scripts/debian_roll kerberos
-lxc-attach -n kerberos -v DEBIAN_FRONTEND=noninteractive -- apt-get -y install krb5-admin-server
-scp configs/kerberos/krb5.conf root@???
