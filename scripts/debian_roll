@@ -1,0 +1,30 @@
+#!/bin/bash
+set -e
+
+NAME=$1
+USER=tom
+PASS=durr
+
+# init
+lxc-create -n $NAME -t download -- --dist debian --release buster --arch amd64
+lxc-start  -n $NAME
+# TODO maybe just info until ip shows up?
+sleep 15
+
+# install basics
+lxc-attach -n $NAME -- apt update
+lxc-attach -n $NAME -- apt dist-upgrade
+lxc-attach -n $NAME -- apt install -y sudo openssh-server x11-xserver-utils
+
+# setup user
+lxc-attach -n $NAME -- adduser $USER --gecos "" --disabled-password
+lxc-attach -n $NAME -- bash -c 'echo -e "'$PASS'\n'$PASS'" | passwd $USER'
+
+# setup x11 forwarding
+lxc-attach -n $NAME -- bash -c 'echo "AllowTcpForwarding yes" >> /etc/ssh/sshd_config'
+lxc-attach -n $NAME -- bash -c 'echo "X11UseLocalhost yes" >> /etc/ssh/sshd_config'
+lxc-attach -n $NAME -- bash -c 'echo "PermitRootLogin yes" >> /etc/ssh/sshd_config'
+lxc-attach -n $NAME -- systemctl restart sshd
+
+# display info
+lxc-info -n $NAME
