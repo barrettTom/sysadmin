@@ -2,3 +2,4 @@
 set -e
 
 scripts/kerberos > logs/kerberos
+lxc-info -n kerberos

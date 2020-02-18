@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 lxc-stop -n kerberos
 lxc-destroy -n kerberos

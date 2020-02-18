@@ -16,10 +16,9 @@ scp configs/kerberos/kdc.conf root@$IP:/etc/krb5kdc/
 scp configs/kerberos/kadm5.acl root@$IP:/etc/krb5kdc/
 
 lxc-attach -n kerberos -- bash -c 'echo -e "'$KRB5_PASS'\n'$KRB5_PASS'" | krb5_newrealm'
+lxc-attach -n kerberos -- bash -c 'echo -e "'$KRB5_ADMIN_PASS'\n'$KRB5_ADMIN_PASS'" | kadmin.local addprinc root/admin'
 
 lxc-attach -n kerberos -- systemctl restart krb5-admin-server
 lxc-attach -n kerberos -- systemctl restart krb5-kdc
-
-lxc-attach -n kerberos -- bash -c 'echo -e "'$KRB5_ADMIN_PASS'\n'$KRB5_ADMIN_PASS'" | kadmin.local addprinc root/admin'
 
 # should be able to now use kadmin, but cannot ?
