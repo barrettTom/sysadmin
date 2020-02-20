@@ -2,3 +2,4 @@
 
 lxc-stop -n kerberos
 lxc-destroy -n kerberos
+ssh-keygen -R "192.168.122.100"
