@@ -28,3 +28,14 @@ lxc-attach -n $NAME -- bash -c 'echo "AllowTcpForwarding yes" >> /etc/ssh/sshd_c
 lxc-attach -n $NAME -- bash -c 'echo "X11UseLocalhost yes" >> /etc/ssh/sshd_config'
 lxc-attach -n $NAME -- bash -c 'echo "PermitRootLogin yes" >> /etc/ssh/sshd_config'
 lxc-attach -n $NAME -- systemctl restart sshd
+
+# setup networking
+IP="$(lxc-info -n $NAME | grep IP | tr -s ' ' | cut -d ' ' -f 2)"
+sshpass -p $ROOT_PASS ssh-copy-id -o "StrictHostKeyChecking=no" root@$IP
+scp configs/$NAME/interfaces root@$IP:/etc/network/
+scp configs/hosts root@$IP:/etc/
+lxc-attach -n $NAME -- systemctl restart networking
+ssh-keygen -R "$IP"
+
+IP="$(lxc-info -n $NAME | grep IP | tr -s ' ' | cut -d ' ' -f 2)"
+sshpass -p $ROOT_PASS ssh-copy-id -o "StrictHostKeyChecking=no" root@$IP

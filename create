@@ -3,3 +3,6 @@ set -e
 
 scripts/kerberos > logs/kerberos
 lxc-info -n kerberos
+
+scripts/nfs > logs/nfs
+lxc-info -n nfs
