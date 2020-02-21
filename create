@@ -6,3 +6,6 @@ lxc-info -n kerberos
 
 scripts/nfs > logs/nfs
 lxc-info -n nfs
+
+scripts/ldap > logs/ldap
+lxc-info -n ldap

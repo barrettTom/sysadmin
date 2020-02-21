@@ -5,3 +5,4 @@ ff02::2		ip6-allrouters
 
 192.168.122.100 krb.hades.hr
 192.168.122.110 nfs.hades.hr
+192.168.122.120 ldap.hades.hr

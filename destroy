@@ -7,3 +7,7 @@ ssh-keygen -R "192.168.122.100"
 lxc-stop -n nfs
 lxc-destroy -n nfs
 ssh-keygen -R "192.168.122.110"
+
+lxc-stop -n ldap
+lxc-destroy -n ldap
+ssh-keygen -R "192.168.122.120"
