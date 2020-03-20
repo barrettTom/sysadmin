@@ -2,4 +2,4 @@
 set -e
 
 scripts/debian_roll ldap
-#lxc-attach -n ldap -v DEBIAN_FRONTEND=noninteractive -- apt-get -y install slapd ldap-utils ldapscripts
+#lxc-attach ldap -v DEBIAN_FRONTEND=noninteractive -- apt-get -y install slapd ldap-utils ldapscripts

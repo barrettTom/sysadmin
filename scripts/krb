@@ -1,0 +1,23 @@
+#!/bin/bash
+set -e
+
+ROOT_PASS=root
+KRB5_PASS=krb5
+KRB5_ADMIN_PASS=pass
+USER_PASS=tommie
+IP="$(grep krb configs/hosts | cut -d ' ' -f 1)"
+
+scripts/debian_roll krb
+lxc-attach krb -v DEBIAN_FRONTEND=noninteractive -- apt-get -y install krb5-admin-server
+
+scp configs/krb/krb5.conf root@$IP:/etc/
+scp configs/krb/kdc.conf root@$IP:/etc/krb5kdc/
+scp configs/krb/kadm5.acl root@$IP:/etc/krb5kdc/
+
+lxc-attach krb -- bash -c 'echo -e "'$KRB5_PASS'\n'$KRB5_PASS'" | krb5_newrealm'
+lxc-attach krb -- bash -c 'echo -e "'$KRB5_ADMIN_PASS'\n'$KRB5_ADMIN_PASS'" | kadmin.local addprinc root/admin'
+
+lxc-attach krb -- systemctl restart krb5-admin-server
+lxc-attach krb -- systemctl restart krb5-kdc
+
+lxc-attach --clear-env krb -- bash -c 'echo -e "'$KRB5_ADMIN_PASS'\n'$USER_PASS'\n'$USER_PASS'\n" | kadmin addprinc tom'

@@ -1,11 +1,11 @@
 #!/bin/bash
 set -e
 
-scripts/kerberos > logs/kerberos
-lxc-info -n kerberos
+scripts/krb > logs/krb
+lxc-info krb
 
 scripts/nfs > logs/nfs
-lxc-info -n nfs
+lxc-info nfs
 
 scripts/ldap > logs/ldap
-lxc-info -n ldap
+lxc-info ldap

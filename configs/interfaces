@@ -7,7 +7,7 @@ iface lo inet loopback
 
 auto eth0
 iface eth0 inet static
-	address 192.168.122.120/24
+	address ADDRESS/24
         post-up route add -net 0.0.0.0 netmask 0.0.0.0 gw 192.168.122.1
         pre-down route del -net 0.0.0.0 netmask 0.0.0.0 gw 192.168.122.1
 

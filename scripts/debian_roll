@@ -7,35 +7,36 @@ PASS=tom
 ROOT_PASS=root
 
 # init
-lxc-create -n $NAME -t download -- --dist debian --release buster --arch amd64
-lxc-start  -n $NAME
+lxc-create $NAME -t download -- --dist debian --release buster --arch amd64
+lxc-start $NAME
 # TODO maybe just info until ip shows up?
 sleep 15
 
 # install basics
-lxc-attach -n $NAME -- apt-get update
-lxc-attach -n $NAME -- apt-get dist-upgrade
-lxc-attach -n $NAME -- apt-get install -y apt-utils
-lxc-attach -n $NAME -- apt-get install -y sudo openssh-server x11-xserver-utils
+lxc-attach $NAME -- apt-get update
+lxc-attach $NAME -- apt-get dist-upgrade
+lxc-attach $NAME -- apt-get install -y apt-utils
+lxc-attach $NAME -- apt-get install -y sudo openssh-server x11-xserver-utils
 
 # setup users
-lxc-attach -n $NAME -- bash -c 'echo -e "'$ROOT_PASS'\n'$ROOT_PASS'" | passwd'
-lxc-attach -n $NAME -- adduser $USER --gecos "" --disabled-password
-lxc-attach -n $NAME -- bash -c 'echo -e "'$PASS'\n'$PASS'" | passwd $USER'
+lxc-attach $NAME -- bash -c 'echo -e "'$ROOT_PASS'\n'$ROOT_PASS'" | passwd'
+lxc-attach $NAME -- adduser $USER --gecos "" --disabled-password
+lxc-attach $NAME -- bash -c 'echo -e "'$PASS'\n'$PASS'" | passwd $USER'
 
 # setup x11 forwarding
-lxc-attach -n $NAME -- bash -c 'echo "AllowTcpForwarding yes" >> /etc/ssh/sshd_config'
-lxc-attach -n $NAME -- bash -c 'echo "X11UseLocalhost yes" >> /etc/ssh/sshd_config'
-lxc-attach -n $NAME -- bash -c 'echo "PermitRootLogin yes" >> /etc/ssh/sshd_config'
-lxc-attach -n $NAME -- systemctl restart sshd
+lxc-attach $NAME -- bash -c 'echo "AllowTcpForwarding yes" >> /etc/ssh/sshd_config'
+lxc-attach $NAME -- bash -c 'echo "X11UseLocalhost yes" >> /etc/ssh/sshd_config'
+lxc-attach $NAME -- bash -c 'echo "PermitRootLogin yes" >> /etc/ssh/sshd_config'
+lxc-attach $NAME -- systemctl restart sshd
 
 # setup networking
-IP="$(lxc-info -n $NAME | grep IP | tr -s ' ' | cut -d ' ' -f 2)"
-sshpass -p $ROOT_PASS ssh-copy-id -o "StrictHostKeyChecking=no" root@$IP
-scp configs/$NAME/interfaces root@$IP:/etc/network/
-scp configs/hosts root@$IP:/etc/
-lxc-attach -n $NAME -- systemctl restart networking
-ssh-keygen -R "$IP"
+IP="$(lxc-info $NAME | grep IP | tr -s ' ' | cut -d ' ' -f 2)"
+DESIRED_IP="$(grep $NAME configs/hosts | cut -d ' ' -f 1)"
 
-IP="$(lxc-info -n $NAME | grep IP | tr -s ' ' | cut -d ' ' -f 2)"
-sshpass -p $ROOT_PASS ssh-copy-id -o "StrictHostKeyChecking=no" root@$IP
+sed "s/ADDRESS/$DESIRED_IP/" configs/interfaces > tmp/interfaces
+sshpass -p $ROOT_PASS scp -o "StrictHostKeyChecking=no" tmp/interfaces root@$IP:/etc/network/interfaces
+sshpass -p $ROOT_PASS scp -o "StrictHostKeyChecking=no" configs/hosts root@$IP:/etc/hosts
+lxc-attach $NAME -- systemctl restart networking
+
+# add ssh key
+sshpass -p $ROOT_PASS ssh-copy-id -o "StrictHostKeyChecking=no" root@$DESIRED_IP

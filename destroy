@@ -1,13 +1,13 @@
 #!/bin/bash
 
-lxc-stop -n kerberos
-lxc-destroy -n kerberos
+lxc-stop krb
+lxc-destroy krb
 ssh-keygen -R "192.168.122.100"
 
-lxc-stop -n nfs
-lxc-destroy -n nfs
+lxc-stop nfs
+lxc-destroy nfs
 ssh-keygen -R "192.168.122.110"
 
-lxc-stop -n ldap
-lxc-destroy -n ldap
+lxc-stop ldap
+lxc-destroy ldap
 ssh-keygen -R "192.168.122.120"
