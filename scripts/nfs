@@ -1,4 +1,4 @@
 #!/bin/bash
 set -e
 
-scripts/debian_roll nfs
+scripts/roll nfs

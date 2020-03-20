@@ -1,11 +1,11 @@
 #!/bin/bash
 set -e
 
-scripts/krb > logs/krb
+scripts/krb > logs/krb 2>logs/krb_err
 lxc-info krb
 
-scripts/nfs > logs/nfs
+scripts/nfs > logs/nfs 2>logs/nfs_err
 lxc-info nfs
 
-scripts/ldap > logs/ldap
+scripts/ldap > logs/ldap 2>logs/ldap_err
 lxc-info ldap

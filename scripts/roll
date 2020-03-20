@@ -15,8 +15,7 @@ sleep 15
 # install basics
 lxc-attach $NAME -- apt-get update
 lxc-attach $NAME -- apt-get dist-upgrade
-lxc-attach $NAME -- apt-get install -y apt-utils
-lxc-attach $NAME -- apt-get install -y sudo openssh-server x11-xserver-utils
+lxc-attach $NAME -- apt-get install -y sudo openssh-server x11-xserver-utils apt-utils
 
 # setup users
 lxc-attach $NAME -- bash -c 'echo -e "'$ROOT_PASS'\n'$ROOT_PASS'" | passwd'
